@@ -1,196 +1,294 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>String Thing</title>
-  <style>
-    html,
-    body {
+<html lang="en" style="user-select: none">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sabby</title>
+    <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/UAParser.js/1.0.37/ua-parser.min.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.162.0/build/three.module.js"
+        }
+      }
+    </script>
+    <style>
+      body,
+      html,
+      canvas {
+        touch-action: none;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        outline: none;
+      }
+    </style>
+  </head>
+  <body
+    style="
       margin: 0;
-      height: 100%;
-      background: #000;
+      width: 100vw;
+      height: 100vh;
+      background: black;
+      pointer-events: none;
       overflow: hidden;
-      font-family: sans-serif;
-      transition: background 0.5s;
-    }
+      user-select: none;
+    "
+  >
+    <script type="module">
+      import * as THREE from "three";
+      const uap = new UAParser();
+      const isMobile = /Mobi/.test(navigator.userAgent);
 
-    canvas {
-      display: block;
-    }
-
-    .settings {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 12px;
-    }
-
-    .box {
-      width: 80px;
-      height: 50px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(5px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      transition: transform 0.3s, background 0.3s;
-      border: 3px solid white;
-      box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .box:hover {
-      transform: scale(1.1);
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    .mini-canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-  </style>
-</head>
-
-<body>
-  <canvas id="canvas"></canvas>
-
-  <div class="settings">
-    <div class="box" id="box1"><canvas class="mini-canvas" id="mini1"></canvas></div>
-    <div class="box" id="box2"><canvas class="mini-canvas" id="mini2"></canvas></div>
-    <div class="box" id="box3"><canvas class="mini-canvas" id="mini3"></canvas></div>
-  </div>
-
-  <script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    let W = canvas.width = window.innerWidth;
-    let H = canvas.height = window.innerHeight;
-
-    const mouse = { x: null, y: null };
-    window.addEventListener('mousemove', e => { mouse.x = e.x; mouse.y = e.y; });
-    window.addEventListener('touchmove', e => { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; });
-
-    // color schemes
-    const schemes = [
-      { bg: '#111', hueShift: 0, sat: 100, light: 50 }, // pastel
-      { bg: '#000', hueShift: 0, sat: 100, light: 50 }, // black neon
-      { bg: '#000', hueShift: 120, sat: 100, light: 50 } // matrix green
-    ];
-    let currentScheme = 0;
-
-    document.getElementById('box1').onclick = () => { currentScheme = 0; document.body.style.background = schemes[0].bg };
-    document.getElementById('box2').onclick = () => { currentScheme = 1; document.body.style.background = schemes[1].bg };
-    document.getElementById('box3').onclick = () => { currentScheme = 2; document.body.style.background = schemes[2].bg };
-
-    class Particle {
-      constructor() { this.reset(); this.active = false; }
-      reset() {
-        this.x = Math.random() * W; this.y = Math.random() * H;
-        this.radius = Math.random() * 2 + 1;
-        this.dx = (Math.random() - 0.5) * 1.5; this.dy = (Math.random() - 0.5) * 1.5;
-        this.hue = Math.random() * 360;
+      const getQueryParam = (paramName) =>
+        new URL(window.location.href).searchParams.get(paramName);
+      let cores = ~~getQueryParam("cores");
+      if (cores === 0) {
+        cores =
+          uap.getResult().device.vendor === "Apple"
+            ? 4
+            : navigator.hardwareConcurrency - 1;
       }
-      draw(ctx) {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `hsl(${(this.hue + schemes[currentScheme].hueShift) % 360},${schemes[currentScheme].sat}%,${schemes[currentScheme].light}%)`;
-        ctx.shadowBlur = 3;
-        ctx.shadowColor = ctx.fillStyle;
-        ctx.fill();
+
+      const PARTICLE_COUNT = ~~getQueryParam("count") || 1_000_000;
+      const WORKER_COUNT = cores;
+      const WORKER_CHUNK_SIZE = Math.floor(PARTICLE_COUNT / WORKER_COUNT);
+      const simData = {
+        workerPool: [],
+        activeWorkers: 0,
+        width: window.innerWidth,
+        height: window.innerHeight,
+        particleGridA: null,
+        particleGridB: null,
+        activeParticleGrid: null,
+        scene: new THREE.Scene(),
+        camera: new THREE.OrthographicCamera(
+          window.innerWidth / -2,
+          window.innerWidth / 2,
+          window.innerHeight / 2,
+          window.innerHeight / -2,
+          0.1,
+          100
+        ),
+        renderer: new THREE.WebGLRenderer(),
+        texture: null,
+        quad: null,
+      };
+
+      const particleStride = 6; // 6 floats x,y,dx,dy,sx,sy;
+      const particleByteStride = particleStride * 4; // 4 bytes per float
+      const sabViewParticles = new Float32Array(
+        new SharedArrayBuffer(PARTICLE_COUNT * particleByteStride)
+      );
+      // dt + screen width + screen height + touch count + mouse x + mouse y
+      const sabViewSimData = new Float32Array(new SharedArrayBuffer(4 * 64));
+
+      simData.camera.position.set(simData.width / 2, simData.height / 2, 1);
+      simData.renderer.setSize(simData.width, simData.height);
+      document.body.appendChild(simData.renderer.domElement);
+
+      simData.texture = new THREE.DataTexture(
+        new Uint8Array(simData.width * simData.height),
+        simData.width,
+        simData.height,
+        THREE.RedFormat,
+        THREE.UnsignedByteType,
+        THREE.UVMapping,
+        THREE.ClampToEdge,
+        THREE.ClampToEdge,
+        THREE.NearestFilter,
+        THREE.NearestFilter,
+        0
+      );
+      const baseC = isMobile ? 5 : 5;
+      const scaleC = isMobile ? 20 : 30;
+      const customMaterial = new THREE.ShaderMaterial({
+        uniforms: {
+          screen: { value: new THREE.Vector2(simData.width, simData.height) },
+          uTexture: { value: simData.texture },
+        },
+        vertexShader: `
+              varying vec2 vUv;
+              
+              void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+              }
+          `,
+        fragmentShader: `
+              uniform sampler2D uTexture;
+              uniform vec2 screen;
+              varying vec2 vUv;
+
+              void main() {
+                float count = texture2D(uTexture, vUv).x;
+                vec4 col = vec4(0,0,0,1);
+                col.x = count * (${baseC}. + ${scaleC}.*gl_FragCoord.x / screen.x);
+                col.y = count * (${baseC}. + ${scaleC}.*gl_FragCoord.y / screen.y);
+                col.z = count * (${baseC}. + ${scaleC}.*(1.-gl_FragCoord.y / screen.y));
+                gl_FragColor = col;
+              }
+          `,
+        blending: THREE.AdditiveBlending,
+        depthTest: false,
+      });
+
+      //setup workers
+      simData.activeWorkers = WORKER_COUNT;
+      for (let i = 0; i < WORKER_COUNT; i++) {
+        const worker = new Worker("./sabby/worker.js");
+        worker.addEventListener("message", onWorkerMessage);
+        simData.workerPool.push(worker);
       }
-      update() {
-        // activate if mouse nearby
-        const sleepDist = 150;
-        if (mouse.x !== null && mouse.y !== null) {
-          const dx = this.x - mouse.x;
-          const dy = this.y - mouse.y;
-          const distSq = dx * dx + dy * dy;
-          this.active = distSq < sleepDist * sleepDist;
+
+      function resize() {
+        const { camera, scene, renderer, workerPool } = simData;
+        simData.width = window.innerWidth;
+        simData.height = window.innerHeight;
+        simData.texture = new THREE.DataTexture(
+          new Uint8Array(simData.width * simData.height),
+          simData.width,
+          simData.height,
+          THREE.RedFormat,
+          THREE.UnsignedByteType,
+          THREE.UVMapping,
+          THREE.ClampToEdge,
+          THREE.ClampToEdge,
+          THREE.NearestFilter,
+          THREE.NearestFilter,
+          0
+        );
+        customMaterial.uniforms.screen.value.set(simData.width, simData.height);
+        customMaterial.uniforms.uTexture.value = simData.texture;
+
+        scene.remove(simData.quad);
+        const geometry = new THREE.PlaneGeometry(simData.width, simData.height);
+        simData.quad = new THREE.Mesh(geometry, customMaterial);
+        simData.quad.position.set(simData.width / 2, simData.height / 2, 0);
+        scene.add(simData.quad);
+
+        sabViewSimData[1] = simData.width;
+        sabViewSimData[2] = simData.height;
+        renderer.setSize(simData.width, simData.height);
+        camera.position.set(simData.width / 2, simData.height / 2, 10);
+        camera.left = simData.width / -2;
+        camera.right = simData.width / 2;
+        camera.top = simData.height / 2;
+        camera.bottom = simData.height / -2;
+        camera.updateProjectionMatrix();
+
+        simData.particleGridA = new Uint8Array(
+          new SharedArrayBuffer(simData.width * simData.height)
+        );
+        simData.particleGridB = new Uint8Array(
+          new SharedArrayBuffer(simData.width * simData.height)
+        );
+
+        //init particles
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+          sabViewParticles[i * particleStride] = Math.random() * simData.width;
+          sabViewParticles[i * particleStride + 1] =
+            Math.random() * simData.height;
+          sabViewParticles[i * particleStride + 2] =
+            (Math.random() * 2 - 1) * 30;
+          sabViewParticles[i * particleStride + 3] =
+            (Math.random() * 2 - 1) * 30;
+          sabViewParticles[i * particleStride + 4] =
+            sabViewParticles[i * particleStride];
+          sabViewParticles[i * particleStride + 5] =
+            sabViewParticles[i * particleStride + 1];
         }
-        if (this.active) {
-          this.x += this.dx; this.y += this.dy; this.hue += 0.5;
-          if (this.x < 0 || this.x > W) this.dx *= -1;
-          if (this.y < 0 || this.y > H) this.dy *= -1;
-        }
-      }
-    }
 
-    let particles = [];
-    for (let i = 0; i < 200; i++) particles.push(new Particle());
-
-    function animate() {
-      ctx.fillStyle = `rgba(0,0,0,0.1)`;
-      ctx.fillRect(0, 0, W, H);
-
-      for (let i = 0; i < particles.length; i++) {
-        let p = particles[i];
-        p.update();
-        p.draw(ctx);
-
-        for (let j = i + 1; j < particles.length; j++) { // only upper triangle
-          let o = particles[j];
-          const dx = p.x - o.x;
-          const dy = p.y - o.y;
-          const distSq = dx * dx + dy * dy;
-          const maxDist = 100;
-          if (distSq < maxDist * maxDist) {
-            ctx.strokeStyle = `hsla(${(p.hue + schemes[currentScheme].hueShift) % 360},${schemes[currentScheme].sat}%,${schemes[currentScheme].light}%,${1 - distSq / (maxDist * maxDist)})`;
-            ctx.lineWidth = 0.8;
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(o.x, o.y);
-            ctx.stroke();
-          }
-        }
-      }
-
-      requestAnimationFrame(animate);
-    }
-    animate();
-
-    window.addEventListener('resize', () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
-
-    function createMini(id) {
-      const c = document.getElementById(id);
-      const ct = c.getContext('2d');
-      c.width = c.offsetWidth; c.height = c.offsetHeight;
-      const parts = [];
-      for (let i = 0; i < 10; i++) { // smaller particle count for mini
-        parts.push({
-          x: Math.random() * c.width, y: Math.random() * c.height,
-          dx: (Math.random() - 0.5) * 0.5, dy: (Math.random() - 0.5) * 0.5,
-          radius: Math.random() * 1 + 0.5, hue: Math.random() * 360
+        // update workers
+        workerPool.forEach((worker, i) => {
+          worker.postMessage({
+            id: i,
+            sabViewParticles,
+            sabViewSimData,
+            particleOffsetStart: WORKER_CHUNK_SIZE * i,
+            particleOffsetEnd: WORKER_CHUNK_SIZE * i + WORKER_CHUNK_SIZE,
+            particleStride,
+            particleGridA: simData.particleGridA,
+            particleGridB: simData.particleGridB,
+          });
         });
       }
-      function drawMini() {
-        ct.clearRect(0, 0, c.width, c.height);
-        parts.forEach(p => {
-          p.x += p.dx; p.y += p.dy; p.hue += 1;
-          if (p.x < 0 || p.x > c.width) p.dx *= -1;
-          if (p.y < 0 || p.y > c.height) p.dy *= -1;
-          ct.beginPath();
-          ct.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-          ct.fillStyle = `hsl(${p.hue},100%,50%)`;
-          ct.shadowBlur = 2; ct.shadowColor = ct.fillStyle;
-          ct.fill();
-        });
-        requestAnimationFrame(drawMini);
+      resize();
+
+      window.addEventListener("resize", resize);
+      window.addEventListener("mousemove", (e) => {
+        sabViewSimData[4] = e.clientX;
+        sabViewSimData[5] = simData.height - e.clientY;
+      });
+      window.addEventListener("mousedown", (e) => {
+        sabViewSimData[3] = 1;
+        sabViewSimData[4] = e.clientX;
+        sabViewSimData[5] = simData.height - e.clientY;
+      });
+      window.addEventListener("mouseup", (e) => {
+        sabViewSimData[3] = 0;
+      });
+      window.addEventListener("touchmove", (e) => {
+        e.preventDefault();
+        sabViewSimData[3] = e.targetTouches.length;
+        for (let i = 0; i < e.targetTouches.length; i++) {
+          const touch = e.targetTouches[i];
+          sabViewSimData[i * 2 + 4] = touch.clientX;
+          sabViewSimData[i * 2 + 4 + 1] = simData.height - touch.clientY;
+        }
+      });
+      window.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        sabViewSimData[3] = e.targetTouches.length;
+        for (let i = 0; i < e.targetTouches.length; i++) {
+          const touch = e.targetTouches[i];
+          sabViewSimData[i * 2 + 4] = touch.clientX;
+          sabViewSimData[i * 2 + 4 + 1] = simData.height - touch.clientY;
+        }
+      });
+      window.addEventListener("touchend", (e) => {
+        e.preventDefault();
+        sabViewSimData[3] = 0;
+      });
+      window.addEventListener("touchcancel", (e) => {
+        e.preventDefault();
+        sabViewSimData[3] = 0;
+      });
+
+      function onWorkerMessage() {
+        simData.activeWorkers--;
+        if (simData.activeWorkers !== 0) {
+          return;
+        }
+        requestAnimationFrame(runSimulation);
       }
-      drawMini();
-    }
 
-    createMini('mini1'); createMini('mini2'); createMini('mini3');
-  </script>
-</body>
+      let lastTime = 1;
+      function runSimulation(currentTime) {
+        const dt = Math.min(0.1, (currentTime - lastTime) / 1000);
+        lastTime = currentTime;
+        sabViewSimData[0] = dt;
+        simData.activeWorkers = WORKER_COUNT;
+        simData.workerPool.forEach((worker, i) => {
+          worker.postMessage({});
+        });
+        simData.activeParticleGrid =
+          simData.activeParticleGrid === simData.particleGridA
+            ? simData.particleGridB
+            : simData.particleGridA;
+        render(simData.activeParticleGrid);
+      }
 
+      function render(grid) {
+        simData.texture.image.data.set(grid);
+        simData.texture.needsUpdate = true;
+        simData.renderer.render(simData.scene, simData.camera);
+        grid.fill(0);
+      }
+    </script>
+  </body>
 </html>
