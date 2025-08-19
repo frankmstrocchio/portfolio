@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BEHOLD!</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/scrollreveal"></script>
+  <style>
+    /* glass effect */
+    .glass {
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.7);
+    }
+    /* tilt effect */
+    .tilt {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .tilt:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-blue-100 text-gray-900 font-sans">
+  <!-- navbar -->
+  <nav class="glass shadow-md sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-xl sm:text-2xl font-bold text-blue-600">🚀 My Projects</h1>
+      <a href="https://github.com/YOURUSERNAME" target="_blank" class="text-gray-700 hover:text-blue-600 text-sm sm:text-base">GitHub ↗</a>
+    </div>
+  </nav>
+
+  <!-- hero -->
+  <section class="max-w-5xl mx-auto px-4 py-16 sm:py-24 text-center">
+    <h2 class="text-4xl sm:text-5xl font-extrabold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent animate-pulse">
+      Welcome to the Gallery of Frank.
+    </h2>
+    <p class="text-base sm:text-lg text-gray-700 max-w-xl mx-auto">
+      A collection of things I’ve built and explored. Works on any device 📱💻
+    </p>
+    <p class="text-base sm:text-sm text-black-700 max-w-xl mx-auto">
+      please hire me, i need to pay rent.
+    </p>
+  </section>
+
+  <!-- project grid -->
+  <section class="max-w-5xl mx-auto px-4 grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
+    <!-- plcholder proj. card -->
+    <div class="bg-white rounded-2xl shadow-md overflow-hidden tilt">
+      <img src="https://placehold.co/600x400" alt="Project preview" class="w-full h-40 object-cover sm:h-48">
+      <div class="p-4">
+        <h3 class="text-lg font-semibold">Project One</h3>
+        <p class="text-gray-600 text-sm sm:text-base">Short description about what this project does.</p>
+        <div class="mt-3 flex gap-3">
+          <a href="https://github.com/YOURUSERNAME/PROJECT1" target="_blank" class="text-blue-600 hover:underline text-sm">Code</a>
+          <a href="https://yourprojectdemo.com" target="_blank" class="text-blue-600 hover:underline text-sm">Demo</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-md overflow-hidden tilt">
+      <img src="https://placehold.co/600x400" alt="Project preview" class="w-full h-40 object-cover sm:h-48">
+      <div class="p-4">
+        <h3 class="text-lg font-semibold">Project Two</h3>
+        <p class="text-gray-600 text-sm sm:text-base">Another cool project description.</p>
+        <div class="mt-3 flex gap-3">
+          <a href="#" class="text-blue-600 hover:underline text-sm">Code</a>
+          <a href="#" class="text-blue-600 hover:underline text-sm">Demo</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- to add more later -->
+  </section>
+
+  <!-- silly footer -->
+  <footer class="text-center py-8 text-gray-500 text-sm mt-12">
+    © 2025 Frank M Strocchio · Built on 2 packs of ramen and a dream
+  </footer>
+
+  <!-- scroll reveal anim -->
+  <script>
+    ScrollReveal().reveal('section, .tilt', {
+      delay: 100,
+      distance: '20px',
+      origin: 'bottom',
+      duration: 700,
+      interval: 150
+    });
+  </script>
+</body>
+</html>
