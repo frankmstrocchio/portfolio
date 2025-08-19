@@ -2,7 +2,7 @@ console.log("worker created");
 const isMobile = /Mobi/.test(navigator.userAgent);
 let lastSetupEvent = null;
 let activeGrid = null;
-// I don't make trash
+// i don't make trash
 let cacher = {
   x: 0,
   y: 0,

@@ -140,7 +140,7 @@
       //setup workers
       simData.activeWorkers = WORKER_COUNT;
       for (let i = 0; i < WORKER_COUNT; i++) {
-        const worker = new Worker("./particle/worker.js");
+        const worker = new Worker("./worker.js");
         worker.addEventListener("message", onWorkerMessage);
         simData.workerPool.push(worker);
       }
