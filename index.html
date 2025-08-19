@@ -53,30 +53,56 @@
   <!-- project grid -->
   <section class="max-w-5xl mx-auto px-4 grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
     <!-- plcholder proj. card -->
-    <div class="bg-white rounded-2xl shadow-md overflow-hidden tilt">
-      <img src="https://placehold.co/600x400?text=Particle+Effect" alt="Project preview"
-        class="w-full h-40 object-cover sm:h-48">
-      <div class="p-4">
-        <h3 class="text-lg font-semibold">Particle Background</h3>
-        <p class="text-gray-600 text-sm sm:text-base">
-          An interactive particle animation that responds to your mouse or touch.
-        </p>
-        <div class="mt-3 flex gap-3">
-          <a href="https://github.com/frankmstrocchio/portfolio/blob/main/particle.html" target="_blank"
-            class="text-blue-600 hover:underline text-sm">Code</a>
-          <a href="particle.html" target="_blank" class="text-blue-600 hover:underline text-sm">Demo</a>
+    <a href="particle.html" target="_blank" class="group relative block">
+      <!-- Neon rainbow glow -->
+      <div
+        class="absolute -inset-1 rounded-2xl bg-[conic-gradient(from_0deg,_red,_orange,_yellow,_green,_blue,_indigo,_violet,_red)] animate-spin-slow blur-xl opacity-70 pointer-events-none">
+      </div>
+    
+      <!-- Card content -->
+      <div
+        class="relative bg-white rounded-2xl shadow-md overflow-hidden tilt transform transition duration-300 group-hover:scale-105 group-hover:shadow-xl">
+        <img src="resources/StringThing.png" alt="StringThing preview"
+          class="w-full h-40 object-cover sm:h-48">
+        <div class="p-4">
+          <h3 class="text-lg font-semibold">String Thing</h3>
+          <p class="text-gray-600 text-sm sm:text-base">
+            An interactive particle animation that responds to your mouse or touch. Do NOT listen to the grateful dead while
+            playing with this at work or you may get fired.
+          </p>
+          <div class="mt-3 flex gap-3">
+            <a href="https://github.com/frankmstrocchio/portfolio/blob/main/particle.html" target="_blank"
+              class="text-blue-600 hover:underline text-sm">Code</a>
+            <a href="particle.html" target="_blank" class="text-blue-600 hover:underline text-sm">Try it!</a>
+          </div>
         </div>
       </div>
-    </div>
+    </a>
+    
+    <style>
+      @keyframes spin-slow {
+        0% {
+          transform: rotate(0deg);
+        }
+    
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    
+      .animate-spin-slow {
+        animation: spin-slow 4s linear infinite;
+      }
+    </style>    
 
     <div class="bg-white rounded-2xl shadow-md overflow-hidden tilt">
       <img src="https://placehold.co/600x400" alt="Project preview" class="w-full h-40 object-cover sm:h-48">
       <div class="p-4">
-        <h3 class="text-lg font-semibold">Project Two</h3>
-        <p class="text-gray-600 text-sm sm:text-base">Another cool project description.</p>
+        <h3 class="text-lg font-semibold">Project Two Coming When I Get Bored Again.</h3>
+        <p class="text-gray-600 text-sm sm:text-base">It's gonna be so cool.</p>
         <div class="mt-3 flex gap-3">
           <a href="#" class="text-blue-600 hover:underline text-sm">Code</a>
-          <a href="#" class="text-blue-600 hover:underline text-sm">Demo</a>
+          <a href="#" class="text-blue-600 hover:underline text-sm">Try it!</a>
         </div>
       </div>
     </div>

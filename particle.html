@@ -1,106 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Particle Background</title>
+  <title>neon particle playground</title>
   <style>
-    body, html {
+    html,
+    body {
       margin: 0;
       height: 100%;
-      background: #0f172a;
+      background: #000;
       overflow: hidden;
+      font-family: sans-serif;
     }
+
     canvas {
       display: block;
     }
+
+    /* settings boxes */
+    .settings {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+    }
+
+    .box {
+      width: 80px;
+      height: 50px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(5px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.3s, background 0.3s;
+      border: 3px solid white;
+      /* thick white border */
+      box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .box:hover {
+      transform: scale(1.1);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .mini-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
   </style>
 </head>
+
 <body>
   <canvas id="canvas"></canvas>
 
+  <div class="settings">
+    <div class="box" id="box1"><canvas class="mini-canvas" id="mini1"></canvas></div>
+    <div class="box" id="box2"><canvas class="mini-canvas" id="mini2"></canvas></div>
+    <div class="box" id="box3"><canvas class="mini-canvas" id="mini3"></canvas></div>
+  </div>
+
   <script>
+    // main canvas setup
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    let W = canvas.width = window.innerWidth;
+    let H = canvas.height = window.innerHeight;
 
-    const particles = [];
     const mouse = { x: null, y: null };
+    window.addEventListener('mousemove', e => { mouse.x = e.x; mouse.y = e.y; });
+    window.addEventListener('touchmove', e => { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; });
 
-    // create particles
-    for (let i = 0; i < 100; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        radius: 2,
-        dx: (Math.random() - 0.5) * 2,
-        dy: (Math.random() - 0.5) * 2
-      });
+    // particle class
+    class Particle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * W;
+        this.y = Math.random() * H;
+        this.radius = Math.random() * 2 + 1;
+        this.dx = (Math.random() - 0.5) * 1.5;
+        this.dy = (Math.random() - 0.5) * 1.5;
+        this.hue = Math.random() * 360;
+      }
+      draw(ctx) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `hsl(${this.hue},100%,50%)`;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = `hsl(${this.hue},100%,50%)`;
+        ctx.fill();
+      }
+      update() {
+        this.x += this.dx;
+        this.y += this.dy;
+        this.hue += 0.5;
+        if (this.x < 0 || this.x > W) this.dx *= -1;
+        if (this.y < 0 || this.y > H) this.dy *= -1;
+        if (mouse.x && mouse.y) {
+          const dx = this.x - mouse.x;
+          const dy = this.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 50) { this.x += dx / dist * 0.8; this.y += dy / dist * 0.8; }
+        }
+      }
     }
 
-    // mouse tracking
-    window.addEventListener('mousemove', e => {
-      mouse.x = e.x;
-      mouse.y = e.y;
-    });
-    window.addEventListener('touchmove', e => {
-      mouse.x = e.touches[0].clientX;
-      mouse.y = e.touches[0].clientY;
-    });
+    // create main particles
+    let particles = [];
+    for (let i = 0; i < 200; i++) particles.push(new Particle());
 
-    // animate
+    // main animation
     function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'rgba(0,0,0,0.1)';
+      ctx.fillRect(0, 0, W, H);
 
       particles.forEach(p => {
-        p.x += p.dx;
-        p.y += p.dy;
-
-        // bounce off walls
-        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = '#38bdf8';
-        ctx.fill();
-
-        // connect lines
-        particles.forEach(other => {
-          let dist = Math.hypot(p.x - other.x, p.y - other.y);
-          if (dist < 120) {
-            ctx.strokeStyle = `rgba(56,189,248,${1 - dist/120})`;
-            ctx.lineWidth = 1;
+        p.update();
+        p.draw(ctx);
+        // lines
+        particles.forEach(o => {
+          const dx = p.x - o.x; const dy = p.y - o.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 100) {
+            ctx.strokeStyle = `hsla(${p.hue},100%,50%,${1 - dist / 100})`;
+            ctx.lineWidth = 0.8;
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
-            ctx.lineTo(other.x, other.y);
+            ctx.lineTo(o.x, o.y);
             ctx.stroke();
           }
         });
-
-        // mouse attraction
-        if (mouse.x && mouse.y) {
-          let dx = p.x - mouse.x;
-          let dy = p.y - mouse.y;
-          let dist = Math.sqrt(dx*dx + dy*dy);
-          if (dist < 150) {
-            p.x += dx / dist * 0.5;
-            p.y += dy / dist * 0.5;
-          }
-        }
       });
 
       requestAnimationFrame(animate);
     }
-
     animate();
 
     // resize
-    window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    });
+    window.addEventListener('resize', () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
+
+    // mini canvas setup
+    function createMini(id) {
+      const c = document.getElementById(id);
+      const ct = c.getContext('2d');
+      c.width = c.offsetWidth; c.height = c.offsetHeight;
+      const parts = [];
+      for (let i = 0; i < 15; i++) {
+        parts.push({
+          x: Math.random() * c.width, y: Math.random() * c.height,
+          dx: (Math.random() - 0.5) * 1.2, dy: (Math.random() - 0.5) * 1.2,
+          radius: Math.random() * 1.5 + 0.5, hue: Math.random() * 360
+        });
+      }
+      function drawMini() {
+        ct.clearRect(0, 0, c.width, c.height);
+        parts.forEach(p => {
+          p.x += p.dx; p.y += p.dy; p.hue += 1;
+          if (p.x < 0 || p.x > c.width) p.dx *= -1;
+          if (p.y < 0 || p.y > c.height) p.dy *= -1;
+          ct.beginPath();
+          ct.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ct.fillStyle = `hsl(${p.hue},100%,50%)`;
+          ct.shadowBlur = 4; ct.shadowColor = `hsl(${p.hue},100%,50%)`;
+          ct.fill();
+        });
+        requestAnimationFrame(drawMini);
+      }
+      drawMini();
+    }
+
+    // create mini animations for each box
+    createMini('mini1');
+    createMini('mini2');
+    createMini('mini3');
+
+    // comments: chill lowercase, no caps
+    // main particles: neon rgb glow
+    // settings boxes: live mini demos inside
   </script>
 </body>
+
 </html>
