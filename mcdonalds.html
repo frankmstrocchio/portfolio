@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>McD Receipt OCR</title>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.1.1/dist/tesseract.min.js"></script>
+<style>
+body { font-family:sans-serif; padding:20px; text-align:center; background:#fff; color:#000; }
+#receiptInput { margin:20px 0; }
+canvas { max-width: 100%; margin-top: 20px; border: 1px solid #ccc; }
+#toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0b0;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+</style>
+</head>
+<body>
+
+<h2>Snap your McDonald's receipt</h2>
+<input type="file" accept="image/*" capture="environment" id="receiptInput">
+<p id="status">Waiting for image...</p>
+<p>Extracted Code: <span id="code" style="font-weight:bold"></span></p>
+<canvas id="canvas"></canvas>
+<div id="toast">Copied to clipboard!</div>
+
+<script>
+const input = document.getElementById('receiptInput');
+const status = document.getElementById('status');
+const codeSpan = document.getElementById('code');
+const toast = document.getElementById('toast');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+function showToast(msg) {
+    toast.textContent = msg;
+    toast.style.opacity = 1;
+    setTimeout(() => toast.style.opacity = 0, 2000);
+}
+
+input.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    status.textContent = 'Processing...';
+    
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+    await img.decode();
+    
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img, 0, 0);
+    
+    try {
+        const { data: { text, words } } = await Tesseract.recognize(file, 'eng');
+        
+        // Look for 26-digit number
+        let found = false;
+        for (let word of words) {
+            const cleanText = word.text.replace(/\s/g,'');
+            if (cleanText.match(/^\d{26}$/)) {
+                const code = cleanText;
+                codeSpan.textContent = code;
+                
+                // Draw rectangle
+                ctx.strokeStyle = 'red';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(word.bbox.x0, word.bbox.y0, word.bbox.x1 - word.bbox.x0, word.bbox.y1 - word.bbox.y0);
+                
+                // Copy to clipboard
+                await navigator.clipboard.writeText(code);
+                
+                status.textContent = 'Code extracted and copied!';
+                showToast('26-digit code copied!');
+                found = true;
+                break;
+            }
+        }
+        
+        if (!found) {
+            codeSpan.textContent = '';
+            status.textContent = 'Could not find a 26-digit code.';
+        }
+    } catch (err) {
+        status.textContent = 'Error processing image.';
+        console.error(err);
+    }
+});
+</script>
+
+</body>
+</html>
