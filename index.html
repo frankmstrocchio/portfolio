@@ -2,95 +2,61 @@
 <html lang="en">
 
 <head>
-  <link rel="stylesheet" href="style.css">
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BEHOLD!</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/scrollreveal"></script>
-  <style>
-    /* glass effect */
-    .glass {
-      backdrop-filter: blur(10px);
-      background: rgba(255, 255, 255, 0.7);
-    }
-
-    /* tilt effect */
-    .tilt {
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .tilt:hover {
-      transform: translateY(-5px) scale(1.02);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-    }
-
-    /* neon racing keyframes */
-    @keyframes neon-race {
-      0% {
-        background-position: 0% 0%;
-      }
-
-      100% {
-        background-position: 400% 0%;
-      }
-    }
-
-    .before\:animate-neon-race::before {
-      background-size: 400% 400%;
-      animation: neon-race 3s linear infinite;
-    }
-  </style>
 </head>
 
-<body class="bg-gradient-to-br from-gray-50 to-blue-100 text-gray-900 font-sans">
-  <div id="loading-screen">
-    <div id="loading-spinner"></div>
-  </div>  
-  <!-- navbar -->
-  <nav class="glass shadow-md sticky top-0 z-50">
+<body class="bg-gradient-to-br from-gray-50 to-blue-100 font-sans">
+
+  <!-- Loading Screen -->
+  <div id="loading-screen"
+    class="fixed inset-0 bg-white flex items-center justify-center z-50 transition-opacity duration-700">
+    <div class="w-14 h-14 border-4 border-gray-300 border-t-green-900 rounded-full animate-spin"></div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="backdrop-blur-md bg-white/70 shadow-md sticky top-0 z-50">
     <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
-      <h1 class="text-xl sm:text-2xl font-bold text-blue-600">🚀 My Projects</h1>
+      <h1 class="text-xl sm:text-2xl font-bold text-green-900">🚀 My Projects</h1>
       <a href="https://github.com/frankmstrocchio" target="_blank"
         class="text-gray-700 hover:text-blue-600 text-sm sm:text-base">GitHub ↗</a>
     </div>
   </nav>
 
-  <!-- hero -->
+  <!-- Hero / Introduction -->
   <section class="max-w-5xl mx-auto px-4 py-16 sm:py-24 text-center">
-    <h2
-      class="text-4xl sm:text-5xl font-extrabold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent animate-pulse">
+    <h2 class="text-4xl sm:text-5xl font-extrabold mb-4 text-green-900">
       Welcome to the Gallery of Frank.
     </h2>
-    <p class="text-base sm:text-lg text-gray-700 max-w-xl mx-auto">
+    <p class="text-base sm:text-lg text-gray-700 max-w-xl mx-auto mb-2">
       A collection of things I’ve built and explored. Works on any device 📱💻
     </p>
-    <p class="text-base sm:text-sm text-black-700 max-w-xl mx-auto">
+    <p class="text-sm text-gray-700 max-w-xl mx-auto">
       please hire me, i need to pay rent.
     </p>
   </section>
 
-  <!-- project grid -->
-  <section class="projects-grid max-w-5xl mx-auto px-4">
-    <!-- String Thing card -->
-    <a href="particle/particle.html" target="_blank" class="group relative block">
-      <div
-        class="relative bg-white rounded-2xl shadow-md overflow-hidden tilt transform transition duration-300 group-hover:scale-105 group-hover:shadow-xl">
+  <!-- Project Grid -->
+  <section class="max-w-5xl mx-auto px-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 justify-items-center">
 
+    <!-- String Thing Card -->
+    <a href="particle/particle.html" target="_blank" class="group w-full max-w-[400px]">
+      <div
+        class="relative bg-white rounded-2xl shadow-md overflow-hidden tilt transform transition duration-300 group-hover:scale-105 group-hover:shadow-xl flex flex-col h-full">
         <!-- Neon racing border -->
         <div class="absolute inset-0 pointer-events-none">
           <div
             class="absolute inset-0 rounded-2xl before:content-[''] before:absolute before:inset-0 before:rounded-2xl before:border-4 before:border-transparent before:transition-opacity before:duration-300 before:bg-[conic-gradient(from_0deg,_#f00,_#ff0,_#0f0,_#0ff,_#00f,_#f0f,_#f00)] before:blur-lg before:opacity-0 group-hover:before:opacity-90 before:animate-neon-race">
           </div>
         </div>
-
         <img src="particle/StringThing.png" alt="StringThing preview" class="w-full h-40 object-cover sm:h-48">
-        <div class="p-4">
-          <h3 class="text-lg font-semibold">String Thing</h3>
-          <p class="text-gray-600 text-sm sm:text-base">
+        <div class="p-4 flex-1 flex flex-col">
+          <h3 class="text-lg font-semibold mb-2">String Thing</h3>
+          <p class="text-gray-600 text-sm sm:text-base flex-1">
             An interactive particle animation that responds to your mouse or touch. Do NOT listen to the grateful dead
-            while
-            playing with this at work or you may get fired.
+            while playing with this at work or you may get fired.
           </p>
           <div class="mt-3 flex gap-3">
             <a href="https://github.com/frankmstrocchio/portfolio/blob/main/particle/particle.html" target="_blank"
@@ -101,22 +67,20 @@
       </div>
     </a>
 
-    <!-- McDonalds card -->
-    <a href="mcdondal/mcdonalds.html" target="_blank" class="group relative block">
+    <!-- McDonalds Card -->
+    <a href="mcdondal/mcdonalds.html" target="_blank" class="group w-full max-w-[400px]">
       <div
-        class="relative bg-white rounded-2xl shadow-md overflow-hidden tilt transform transition duration-300 group-hover:scale-105 group-hover:shadow-xl">
-    
+        class="relative bg-white rounded-2xl shadow-md overflow-hidden tilt transform transition duration-300 group-hover:scale-105 group-hover:shadow-xl flex flex-col h-full">
         <!-- Neon racing border -->
         <div class="absolute inset-0 pointer-events-none">
           <div
             class="absolute inset-0 rounded-2xl before:content-[''] before:absolute before:inset-0 before:rounded-2xl before:border-4 before:border-transparent before:transition-opacity before:duration-300 before:bg-[conic-gradient(from_0deg,_#f00,_#ff0,_#0f0,_#0ff,_#00f,_#f0f,_#f00)] before:blur-lg before:opacity-0 group-hover:before:opacity-90 before:animate-neon-race">
           </div>
         </div>
-    
         <img src="mcdondal/EvilBorger.png" alt="McDonalds preview" class="w-full h-40 object-cover sm:h-48">
-        <div class="p-4">
-          <h3 class="text-lg font-semibold">McDonanld's Scanner</h3>
-          <p class="text-gray-600 text-sm sm:text-base">
+        <div class="p-4 flex-1 flex flex-col">
+          <h3 class="text-lg font-semibold mb-2">McDonanld's Scanner</h3>
+          <p class="text-gray-600 text-sm sm:text-base flex-1">
             A project for a corporate client - WIP and will be updated regularly.
           </p>
           <div class="mt-3 flex gap-3">
@@ -127,30 +91,50 @@
         </div>
       </div>
     </a>
+
+    <!-- Placeholder Third Card -->
+    <a href="#" target="_blank" class="group w-full max-w-[400px]">
+      <div
+        class="relative bg-white rounded-2xl shadow-md overflow-hidden tilt transform transition duration-300 group-hover:scale-105 group-hover:shadow-xl flex flex-col h-full">
+        <img src="https://via.placeholder.com/400x192" alt="Third project" class="w-full h-40 object-cover sm:h-48">
+        <div class="p-4 flex-1 flex flex-col">
+          <h3 class="text-lg font-semibold mb-2">Coming Soon</h3>
+          <p class="text-gray-600 text-sm sm:text-base flex-1">
+            Another project will be showcased here soon. Stay tuned!
+          </p>
+          <div class="mt-3 flex gap-3">
+            <a href="#" class="text-blue-600 hover:underline text-sm">Code</a>
+            <a href="#" class="text-blue-600 hover:underline text-sm">Try it!</a>
+          </div>
+        </div>
+      </div>
+    </a>
+
   </section>
 
-    <!-- footer -->
-    <footer class="text-center py-8 text-gray-500 text-sm mt-12">
-      © 2025 Frank M Strocchio · Built on 2 packs of ramen and a dream
-    </footer>
+  <!-- Footer -->
+  <footer class="text-center py-8 text-gray-500 text-sm mt-12">
+    © 2025 Frank M Strocchio · Built on 2 packs of ramen and a dream
+  </footer>
 
-    <!-- scroll reveal -->
-    <script>
-      ScrollReveal().reveal('section, .tilt', {
-        delay: 100,
-        distance: '20px',
-        origin: 'bottom',
-        duration: 700,
-        interval: 150
-      });
-    </script>
-    <script>
-      window.addEventListener("load", function () {
-        const loader = document.getElementById("loading-screen");
-        loader.classList.add("fade-out");
-        setTimeout(() => loader.style.display = "none", 800); // remove after fade
-      });
-    </script>    
+  <!-- Scroll Reveal -->
+  <script src="https://unpkg.com/scrollreveal"></script>
+  <script>
+    ScrollReveal().reveal('section, .tilt', {
+      delay: 100,
+      distance: '20px',
+      origin: 'bottom',
+      duration: 700,
+      interval: 150
+    });
+
+    window.addEventListener("load", function () {
+      const loader = document.getElementById("loading-screen");
+      loader.classList.add("opacity-0");
+      setTimeout(() => loader.remove(), 700);
+    });
+  </script>
+
 </body>
 
 </html>
