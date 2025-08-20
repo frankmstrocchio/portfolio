@@ -1,9 +1,18 @@
 /* ---------- project cards grid ---------- */
 .projects-grid {
-    display: grid;
-    gap: 2rem;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
+    /* center cards horizontally */
+    gap: 2rem;
+    /* spacing between cards */
+}
+
+.projects-grid>a {
+    flex: 1 1 300px;
+    /* each card takes min 300px, grows if space */
+    max-width: 400px;
+    /* don’t let them get too wide */
 }
 
 /* ---------- main headings ---------- */
