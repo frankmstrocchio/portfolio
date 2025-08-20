@@ -8,11 +8,27 @@
     /* spacing between cards */
 }
 
+.projects-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+}
+
 .projects-grid>a {
     flex: 1 1 300px;
-    /* each card takes min 300px, grows if space */
-    max-width: 400px;
-    /* don’t let them get too wide */
+    /* minimum 300px, but grows equally */
+    max-width: 1fr;
+    /* each card shares space evenly */
+    display: flex;
+    /* stretch inner card */
+}
+
+.projects-grid>a>div {
+    flex: 1;
+    /* inner card fills evenly */
+    display: flex;
+    flex-direction: column;
 }
 
 /* ---------- main headings ---------- */
