@@ -7,57 +7,82 @@
   <title>BEHOLD!</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Tilt effect */
+    /* Tilt / hover scale */
     .tilt {
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .tilt:hover {
-      transform: translateY(-5px) scale(1.05);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    .group:hover .tilt {
+      transform: scale(1.05);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
     }
 
-    /* Halo & neon gradient */
-    .neon-halo {
-      background: conic-gradient(from 0deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
-      filter: blur(30px);
-      opacity: 0.5;
-      transition: opacity 0.3s;
+    /* Halo wrapper */
+    .halo {
+      position: absolute;
+      top: -30px;
+      left: -30px;
+      right: -30px;
+      bottom: -30px;
+      border-radius: 1rem;
+      filter: blur(40px);
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: -1;
+      pointer-events: none;
     }
 
-    .neon-halo:hover {
-      opacity: 0.9;
-    }
-
-    /* Halo black & yellow for McDonalds card */
-    .neon-halo-mcd {
-      background: conic-gradient(from 0deg, #000, #ff0, #000, #ff0);
-      filter: blur(30px);
-      opacity: 0.5;
-      transition: opacity 0.3s;
-    }
-
-    .neon-halo-mcd:hover {
-      opacity: 0.9;
-    }
-
-    /* Small rays behind card */
+    /* Rays wrapper */
     .rays::before,
     .rays::after {
       content: '';
       position: absolute;
-      width: 150%;
-      height: 150%;
-      top: -25%;
-      left: -25%;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
-      transform: rotate(45deg);
-      filter: blur(8px);
-      z-index: -20;
+      width: 200%;
+      height: 200%;
+      top: -50%;
+      left: -50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 70%);
+      filter: blur(10px);
+      transform: rotate(45deg) scale(0.9);
+      transition: transform 0.3s, opacity 0.3s;
+      opacity: 0.7;
+      z-index: -2;
+      pointer-events: none;
     }
 
     .rays::after {
-      transform: rotate(-45deg);
+      transform: rotate(-45deg) scale(0.9);
+    }
+
+    /* On hover scale halos and rays */
+    .group:hover .halo,
+    .group:hover .rays::before,
+    .group:hover .rays::after {
+      opacity: 0.9;
+      transform: scale(1.1);
+    }
+
+    /* Neon animation */
+    @keyframes neon-race {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .halo-default {
+      background: conic-gradient(from 0deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+    }
+
+    .halo-mcd {
+      background: conic-gradient(from 0deg, #000, #ff0, #000, #ff0);
+    }
+
+    .group:hover .halo {
+      animation: neon-race 3s linear infinite;
     }
   </style>
 </head>
@@ -96,8 +121,8 @@
     <!-- String Thing Card -->
     <a href="particle/particle.html" target="_blank" class="w-full max-w-[400px] group">
       <div
-        class="relative tilt flex flex-col h-full bg-white rounded-2xl shadow-md overflow-hidden transition-transform duration-300">
-        <div class="absolute -inset-6 neon-halo rays -z-10"></div>
+        class="relative tilt rays flex flex-col h-full bg-white rounded-2xl shadow-md overflow-hidden transition-transform duration-300">
+        <div class="halo halo-default"></div>
         <img src="particle/StringThing.png" alt="StringThing preview" class="w-full h-40 object-cover sm:h-48">
         <div class="p-4 flex-1 flex flex-col">
           <h3 class="text-lg font-semibold mb-2">String Thing</h3>
@@ -117,8 +142,8 @@
     <!-- McDonalds Card -->
     <a href="mcdondal/mcdonalds.html" target="_blank" class="w-full max-w-[400px] group">
       <div
-        class="relative tilt flex flex-col h-full bg-white rounded-2xl shadow-md overflow-hidden transition-transform duration-300">
-        <div class="absolute -inset-6 neon-halo-mcd rays -z-10"></div>
+        class="relative tilt rays flex flex-col h-full bg-white rounded-2xl shadow-md overflow-hidden transition-transform duration-300">
+        <div class="halo halo-mcd"></div>
         <img src="mcdondal/EvilBorger.png" alt="McDonalds preview" class="w-full h-40 object-cover sm:h-48">
         <div class="p-4 flex-1 flex flex-col">
           <h3 class="text-lg font-semibold mb-2">McDonanld's Scanner</h3>
@@ -137,8 +162,8 @@
     <!-- Placeholder Third Card -->
     <a href="#" target="_blank" class="w-full max-w-[400px] group">
       <div
-        class="relative tilt flex flex-col h-full bg-white rounded-2xl shadow-md overflow-hidden transition-transform duration-300">
-        <div class="absolute -inset-6 neon-halo rays -z-10"></div>
+        class="relative tilt rays flex flex-col h-full bg-white rounded-2xl shadow-md overflow-hidden transition-transform duration-300">
+        <div class="halo halo-default"></div>
         <img src="https://via.placeholder.com/400x192" alt="Third project" class="w-full h-40 object-cover sm:h-48">
         <div class="p-4 flex-1 flex flex-col">
           <h3 class="text-lg font-semibold mb-2">Coming Soon</h3>
