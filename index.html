@@ -12,16 +12,17 @@
       transition: transform 0.3s ease;
       z-index: 0;
     }
-  
-    /* Rainbow broken shadow using ::before */
+
+    /* Rainbow jagged shadow behind card */
     .tilt::before {
       content: '';
       position: absolute;
-      inset: 0;
+      inset: -20px;
+      /* bigger than the card */
       border-radius: inherit;
       background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
-      filter: blur(20px);
-      opacity: 0.6;
+      filter: blur(30px);
+      opacity: 0.5;
       z-index: -1;
       clip-path: polygon(0% 0%, 100% 0%, 100% 15%, 85% 15%, 85% 30%, 100% 30%,
           100% 45%, 85% 45%, 85% 60%, 100% 60%, 100% 75%, 85% 75%,
@@ -29,16 +30,23 @@
           0% 45%, 15% 45%, 15% 30%, 0% 30%, 0% 15%, 15% 15%, 15% 0%);
       transition: transform 0.3s, opacity 0.3s;
     }
-  
+
+    .tilt-content {
+      position: relative;
+      z-index: 10;
+      /* content above shadow */
+    }
+
+    /* Hover effects */
     .group:hover .tilt {
       transform: scale(1.05);
     }
-  
+
     .group:hover .tilt::before {
       transform: scale(1.2);
       opacity: 0.9;
     }
-  </style>  
+  </style>
 </head>
 
 <body class="bg-gray-100 font-sans">
@@ -69,12 +77,14 @@
     <!-- String Thing Card -->
     <a href="particle/particle.html" target="_blank" class="w-full max-w-[400px] group">
       <div class="tilt flex flex-col h-full bg-white rounded-2xl shadow-md overflow-hidden">
-        <img src="particle/StringThing.png" alt="StringThing preview" class="w-full h-40 object-cover sm:h-48">
-        <div class="p-4 flex-1 flex flex-col">
-          <h3 class="text-lg font-semibold mb-2">String Thing</h3>
-          <p class="text-gray-600 text-sm sm:text-base flex-1">
-            An interactive particle animation that responds to your mouse or touch.
-          </p>
+        <div class="tilt-content flex flex-col">
+          <img src="particle/StringThing.png" alt="StringThing preview" class="w-full h-40 object-cover sm:h-48">
+          <div class="p-4 flex-1 flex flex-col">
+            <h3 class="text-lg font-semibold mb-2">String Thing</h3>
+            <p class="text-gray-600 text-sm sm:text-base flex-1">
+              An interactive particle animation that responds to your mouse or touch.
+            </p>
+          </div>
         </div>
       </div>
     </a>
@@ -82,12 +92,14 @@
     <!-- McDonalds Card -->
     <a href="mcdondal/mcdonalds.html" target="_blank" class="w-full max-w-[400px] group">
       <div class="tilt flex flex-col h-full bg-white rounded-2xl shadow-md overflow-hidden">
-        <img src="mcdondal/EvilBorger.png" alt="McDonalds preview" class="w-full h-40 object-cover sm:h-48">
-        <div class="p-4 flex-1 flex flex-col">
-          <h3 class="text-lg font-semibold mb-2">McDonald’s Scanner</h3>
-          <p class="text-gray-600 text-sm sm:text-base flex-1">
-            A project for a corporate client - WIP and will be updated regularly.
-          </p>
+        <div class="tilt-content flex flex-col">
+          <img src="mcdondal/EvilBorger.png" alt="McDonalds preview" class="w-full h-40 object-cover sm:h-48">
+          <div class="p-4 flex-1 flex flex-col">
+            <h3 class="text-lg font-semibold mb-2">McDonald’s Scanner</h3>
+            <p class="text-gray-600 text-sm sm:text-base flex-1">
+              A project for a corporate client - WIP and will be updated regularly.
+            </p>
+          </div>
         </div>
       </div>
     </a>
@@ -95,12 +107,14 @@
     <!-- Placeholder Third Card -->
     <a href="#" target="_blank" class="w-full max-w-[400px] group">
       <div class="tilt flex flex-col h-full bg-white rounded-2xl shadow-md overflow-hidden">
-        <img src="https://via.placeholder.com/400x192" alt="Third project" class="w-full h-40 object-cover sm:h-48">
-        <div class="p-4 flex-1 flex flex-col">
-          <h3 class="text-lg font-semibold mb-2">Coming Soon</h3>
-          <p class="text-gray-600 text-sm sm:text-base flex-1">
-            Another project will be showcased here soon. Stay tuned!
-          </p>
+        <div class="tilt-content flex flex-col">
+          <img src="https://via.placeholder.com/400x192" alt="Third project" class="w-full h-40 object-cover sm:h-48">
+          <div class="p-4 flex-1 flex flex-col">
+            <h3 class="text-lg font-semibold mb-2">Coming Soon</h3>
+            <p class="text-gray-600 text-sm sm:text-base flex-1">
+              Another project will be showcased here soon. Stay tuned!
+            </p>
+          </div>
         </div>
       </div>
     </a>
