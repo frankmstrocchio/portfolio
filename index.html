@@ -7,113 +7,53 @@
   <title>BEHOLD!</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Tilt / hover scale */
     .tilt {
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      transition: transform 0.3s ease;
+      z-index: 0;
     }
-
-    .group:hover .tilt {
-      transform: scale(1.05);
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
-    }
-
-    /* Halo wrapper */
-    .halo {
-  position: absolute;
-  top: -6px;
-  left: -6px;
-  right: -6px;
-  bottom: -6px;
-  border: 4px solid transparent;
-  border-radius: inherit;
-  background: conic-gradient(from 0deg, #f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00);
-  background-origin: border-box;
-  background-clip: border-box;
-  filter: blur(10px);
-  z-index: -10;
-  pointer-events: none;
-  animation: neon-race 3s linear infinite;
-}
-
-@keyframes neon-race {
-  0% { background-position: 0% 0%; }
-  100% { background-position: 400% 0%; }
-}
-
-    /* Rays wrapper */
-    .rays::before,
-    .rays::after {
+  
+    /* Rainbow broken shadow using ::before */
+    .tilt::before {
       content: '';
       position: absolute;
-      width: 200%;
-      height: 200%;
-      top: -50%;
-      left: -50%;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 70%);
-      filter: blur(10px);
-      transform: rotate(45deg) scale(0.9);
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
+      filter: blur(20px);
+      opacity: 0.6;
+      z-index: -1;
+      clip-path: polygon(0% 0%, 100% 0%, 100% 15%, 85% 15%, 85% 30%, 100% 30%,
+          100% 45%, 85% 45%, 85% 60%, 100% 60%, 100% 75%, 85% 75%,
+          85% 100%, 0% 100%, 0% 75%, 15% 75%, 15% 60%, 0% 60%,
+          0% 45%, 15% 45%, 15% 30%, 0% 30%, 0% 15%, 15% 15%, 15% 0%);
       transition: transform 0.3s, opacity 0.3s;
-      opacity: 0.7;
-      z-index: -2;
-      pointer-events: none;
     }
-
-    .rays::after {
-      transform: rotate(-45deg) scale(0.9);
+  
+    .group:hover .tilt {
+      transform: scale(1.05);
     }
-
-    /* On hover scale halos and rays */
-    .group:hover .halo,
-    .group:hover .rays::before,
-    .group:hover .rays::after {
+  
+    .group:hover .tilt::before {
+      transform: scale(1.2);
       opacity: 0.9;
-      transform: scale(1.3);
     }
-
-    /* Neon animation */
-    @keyframes neon-race {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-
-    .halo-default {
-      background: conic-gradient(from 0deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
-    }
-
-    .halo-mcd {
-      background: conic-gradient(from 0deg, #000, #ff0, #000, #ff0);
-    }
-
-    .group:hover .halo {
-      animation: neon-race 3s linear infinite;
-    }
-  </style>
+  </style>  
 </head>
 
-<body class="bg-gradient-to-br from-gray-50 to-blue-100 font-sans">
-
-  <!-- Loading Screen -->
-  <div id="loading-screen"
-    class="fixed inset-0 bg-white flex items-center justify-center z-50 transition-opacity duration-700">
-    <div class="w-14 h-14 border-4 border-gray-300 border-t-green-900 rounded-full animate-spin"></div>
-  </div>
+<body class="bg-gray-100 font-sans">
 
   <!-- Navbar -->
-  <nav class="backdrop-blur-md bg-white/70 shadow-md sticky top-0 z-50">
+  <nav class="bg-white shadow-md sticky top-0 z-50">
     <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
       <h1 class="text-xl sm:text-2xl font-bold text-green-900">🚀 My Projects</h1>
-      <a href="https://github.com/frankmstrocchio" target="_blank"
-        class="text-gray-700 hover:text-blue-600 text-sm sm:text-base">GitHub ↗</a>
+      <a href="https://github.com/frankmstrocchio" target="_blank" class="text-gray-700 hover:text-blue-600">GitHub
+        ↗</a>
     </div>
   </nav>
 
-  <!-- Hero / Introduction -->
-  <section class="max-w-5xl mx-auto px-4 py-16 sm:py-24 text-center">
+  <!-- Introduction -->
+  <section class="max-w-5xl mx-auto px-4 py-16 text-center">
     <h2 class="text-4xl sm:text-5xl font-extrabold mb-4 text-green-900">Welcome to the Gallery of Frank.</h2>
     <p class="text-base sm:text-lg text-gray-700 max-w-xl mx-auto mb-2">
       A collection of things I’ve built and explored. Works on any device 📱💻
@@ -128,52 +68,39 @@
 
     <!-- String Thing Card -->
     <a href="particle/particle.html" target="_blank" class="w-full max-w-[400px] group">
-      <div
-        class="relative tilt rays flex flex-col h-full bg-white rounded-2xl shadow-md transition-transform duration-300">
-        <div class="halo halo-default"></div>
-        <div class="relative z-10 flex flex-col flex-1">
+      <div class="tilt flex flex-col h-full bg-white rounded-2xl shadow-md overflow-hidden">
         <img src="particle/StringThing.png" alt="StringThing preview" class="w-full h-40 object-cover sm:h-48">
         <div class="p-4 flex-1 flex flex-col">
           <h3 class="text-lg font-semibold mb-2">String Thing</h3>
           <p class="text-gray-600 text-sm sm:text-base flex-1">
-            An interactive particle animation that responds to your mouse or touch. Do NOT listen to the grateful dead
-            while playing with this at work or you may get fired.
+            An interactive particle animation that responds to your mouse or touch.
           </p>
-        </div>
         </div>
       </div>
     </a>
 
     <!-- McDonalds Card -->
     <a href="mcdondal/mcdonalds.html" target="_blank" class="w-full max-w-[400px] group">
-      <div
-        class="relative tilt rays flex flex-col h-full bg-white rounded-2xl shadow-md transition-transform duration-300">
-        <div class="halo halo-mcd"></div>
-        <div class="relative z-10 flex flex-col flex-1">
+      <div class="tilt flex flex-col h-full bg-white rounded-2xl shadow-md overflow-hidden">
         <img src="mcdondal/EvilBorger.png" alt="McDonalds preview" class="w-full h-40 object-cover sm:h-48">
         <div class="p-4 flex-1 flex flex-col">
-          <h3 class="text-lg font-semibold mb-2">McDonanld's Scanner</h3>
+          <h3 class="text-lg font-semibold mb-2">McDonald’s Scanner</h3>
           <p class="text-gray-600 text-sm sm:text-base flex-1">
             A project for a corporate client - WIP and will be updated regularly.
           </p>
-        </div>
         </div>
       </div>
     </a>
 
     <!-- Placeholder Third Card -->
     <a href="#" target="_blank" class="w-full max-w-[400px] group">
-      <div
-        class="relative tilt rays flex flex-col h-full bg-white rounded-2xl shadow-md transition-transform duration-300">
-        <div class="halo halo-default"></div>
-        <div class="relative z-10 flex flex-col flex-1">
+      <div class="tilt flex flex-col h-full bg-white rounded-2xl shadow-md overflow-hidden">
         <img src="https://via.placeholder.com/400x192" alt="Third project" class="w-full h-40 object-cover sm:h-48">
         <div class="p-4 flex-1 flex flex-col">
           <h3 class="text-lg font-semibold mb-2">Coming Soon</h3>
           <p class="text-gray-600 text-sm sm:text-base flex-1">
             Another project will be showcased here soon. Stay tuned!
           </p>
-          </div>
         </div>
       </div>
     </a>
@@ -185,22 +112,6 @@
     © 2025 Frank M Strocchio · Built on 2 packs of ramen and a dream
   </footer>
 
-  <script src="https://unpkg.com/scrollreveal"></script>
-  <script>
-    ScrollReveal().reveal('section, .tilt', {
-      delay: 100,
-      distance: '20px',
-      origin: 'bottom',
-      duration: 700,
-      interval: 150
-    });
-
-    window.addEventListener("load", function () {
-      const loader = document.getElementById("loading-screen");
-      loader.classList.add("opacity-0");
-      setTimeout(() => loader.remove(), 700);
-    });
-  </script>
 </body>
 
 </html>
