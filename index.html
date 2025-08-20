@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+  <link rel="stylesheet" href="style.css">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BEHOLD!</title>
@@ -43,6 +44,9 @@
 </head>
 
 <body class="bg-gradient-to-br from-gray-50 to-blue-100 text-gray-900 font-sans">
+  <div id="loading-screen">
+    <div id="loading-spinner"></div>
+  </div>  
   <!-- navbar -->
   <nav class="glass shadow-md sticky top-0 z-50">
     <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
@@ -123,6 +127,7 @@
         </div>
       </div>
     </a>
+  </section>
 
     <!-- footer -->
     <footer class="text-center py-8 text-gray-500 text-sm mt-12">
@@ -139,6 +144,13 @@
         interval: 150
       });
     </script>
+    <script>
+      window.addEventListener("load", function () {
+        const loader = document.getElementById("loading-screen");
+        loader.classList.add("fade-out");
+        setTimeout(() => loader.style.display = "none", 800); // remove after fade
+      });
+    </script>    
 </body>
 
 </html>
