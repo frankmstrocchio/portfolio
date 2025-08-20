@@ -19,20 +19,26 @@
 
     /* Halo wrapper */
     .halo {
-      position: absolute;
-      top: -30px;
-      left: -30px;
-      right: -30px;
-      bottom: -30px;
-      width: 160%;
-      height: 160%;
-      border-radius: 1rem;
-      filter: blur(60px);
-      opacity: 0;
-      transition: opacity 0.3s, transform 0.6s;
-      z-index: -1;
-      pointer-events: none;
-    }
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  right: -6px;
+  bottom: -6px;
+  border: 4px solid transparent;
+  border-radius: inherit;
+  background: conic-gradient(from 0deg, #f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00);
+  background-origin: border-box;
+  background-clip: border-box;
+  filter: blur(10px);
+  z-index: -10;
+  pointer-events: none;
+  animation: neon-race 3s linear infinite;
+}
+
+@keyframes neon-race {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 400% 0%; }
+}
 
     /* Rays wrapper */
     .rays::before,
