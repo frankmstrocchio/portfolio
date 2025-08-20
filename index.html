@@ -6,98 +6,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BEHOLD!</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/scrollreveal"></script>
   <style>
-    /* tilt effect */
+    /* Tilt effect */
     .tilt {
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    /* card hover: grow everything (halo + rays) */
-    .card-wrapper {
-      position: relative;
-      transition: transform 0.3s ease;
-    }
-
-    .card-wrapper:hover {
-      transform: scale(1.05);
-    }
-
     .tilt:hover {
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     }
 
-    /* neon halo behind card */
-    .neon-halo::before {
-      content: '';
-      position: absolute;
-      inset: -1rem;
-      /* bigger than card */
-      border-radius: 1rem;
-      background-size: 400% 400%;
-      filter: blur(3rem);
-      z-index: -10;
-      animation: neon-race 3s linear infinite, neon-pulse 2s ease-in-out infinite;
-      opacity: 0.8;
+    /* Halo & neon gradient */
+    .neon-halo {
+      background: conic-gradient(from 0deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+      filter: blur(30px);
+      opacity: 0.5;
+      transition: opacity 0.3s;
     }
 
-    /* small rays around card */
+    .neon-halo:hover {
+      opacity: 0.9;
+    }
+
+    /* Halo black & yellow for McDonalds card */
+    .neon-halo-mcd {
+      background: conic-gradient(from 0deg, #000, #ff0, #000, #ff0);
+      filter: blur(30px);
+      opacity: 0.5;
+      transition: opacity 0.3s;
+    }
+
+    .neon-halo-mcd:hover {
+      opacity: 0.9;
+    }
+
+    /* Small rays behind card */
+    .rays::before,
     .rays::after {
       content: '';
       position: absolute;
-      inset: -1.5rem;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 2%, transparent 2%);
-      background-size: 10px 10px;
-      z-index: -5;
-      animation: rays-move 2s infinite linear;
-      pointer-events: none;
+      width: 150%;
+      height: 150%;
+      top: -25%;
+      left: -25%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+      transform: rotate(45deg);
+      filter: blur(8px);
+      z-index: -20;
     }
 
-    /* gradients per card */
-    .halo-rainbow::before {
-      background: conic-gradient(from 0deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
-    }
-
-    .halo-yellow-black::before {
-      background: conic-gradient(from 0deg, #000, #ff0, #000, #ff0);
-    }
-
-    .halo-cyan-blue::before {
-      background: conic-gradient(from 0deg, #0ff, #00f, #0ff, #00f);
-    }
-
-    /* keyframes */
-    @keyframes neon-race {
-      0% {
-        background-position: 0% 0%;
-      }
-
-      100% {
-        background-position: 400% 0%;
-      }
-    }
-
-    @keyframes neon-pulse {
-
-      0%,
-      100% {
-        opacity: 0.7;
-      }
-
-      50% {
-        opacity: 1;
-      }
-    }
-
-    @keyframes rays-move {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(360deg);
-      }
+    .rays::after {
+      transform: rotate(-45deg);
     }
   </style>
 </head>
@@ -121,9 +81,7 @@
 
   <!-- Hero / Introduction -->
   <section class="max-w-5xl mx-auto px-4 py-16 sm:py-24 text-center">
-    <h2 class="text-4xl sm:text-5xl font-extrabold mb-4 text-green-900">
-      Welcome to the Gallery of Frank.
-    </h2>
+    <h2 class="text-4xl sm:text-5xl font-extrabold mb-4 text-green-900">Welcome to the Gallery of Frank.</h2>
     <p class="text-base sm:text-lg text-gray-700 max-w-xl mx-auto mb-2">
       A collection of things I’ve built and explored. Works on any device 📱💻
     </p>
@@ -136,9 +94,10 @@
   <section class="max-w-5xl mx-auto px-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 justify-items-center">
 
     <!-- String Thing Card -->
-    <a href="particle/particle.html" target="_blank"
-      class="card-wrapper neon-halo halo-rainbow rays w-full max-w-[400px]">
-      <div class="relative bg-white rounded-2xl shadow-md overflow-hidden tilt flex flex-col h-full">
+    <a href="particle/particle.html" target="_blank" class="w-full max-w-[400px] group">
+      <div
+        class="relative tilt flex flex-col h-full bg-white rounded-2xl shadow-md overflow-hidden transition-transform duration-300">
+        <div class="absolute -inset-6 neon-halo rays -z-10"></div>
         <img src="particle/StringThing.png" alt="StringThing preview" class="w-full h-40 object-cover sm:h-48">
         <div class="p-4 flex-1 flex flex-col">
           <h3 class="text-lg font-semibold mb-2">String Thing</h3>
@@ -156,9 +115,10 @@
     </a>
 
     <!-- McDonalds Card -->
-    <a href="mcdondal/mcdonalds.html" target="_blank"
-      class="card-wrapper neon-halo halo-yellow-black rays w-full max-w-[400px]">
-      <div class="relative bg-white rounded-2xl shadow-md overflow-hidden tilt flex flex-col h-full">
+    <a href="mcdondal/mcdonalds.html" target="_blank" class="w-full max-w-[400px] group">
+      <div
+        class="relative tilt flex flex-col h-full bg-white rounded-2xl shadow-md overflow-hidden transition-transform duration-300">
+        <div class="absolute -inset-6 neon-halo-mcd rays -z-10"></div>
         <img src="mcdondal/EvilBorger.png" alt="McDonalds preview" class="w-full h-40 object-cover sm:h-48">
         <div class="p-4 flex-1 flex flex-col">
           <h3 class="text-lg font-semibold mb-2">McDonanld's Scanner</h3>
@@ -175,8 +135,10 @@
     </a>
 
     <!-- Placeholder Third Card -->
-    <a href="#" target="_blank" class="card-wrapper neon-halo halo-cyan-blue rays w-full max-w-[400px]">
-      <div class="relative bg-white rounded-2xl shadow-md overflow-hidden tilt flex flex-col h-full">
+    <a href="#" target="_blank" class="w-full max-w-[400px] group">
+      <div
+        class="relative tilt flex flex-col h-full bg-white rounded-2xl shadow-md overflow-hidden transition-transform duration-300">
+        <div class="absolute -inset-6 neon-halo rays -z-10"></div>
         <img src="https://via.placeholder.com/400x192" alt="Third project" class="w-full h-40 object-cover sm:h-48">
         <div class="p-4 flex-1 flex flex-col">
           <h3 class="text-lg font-semibold mb-2">Coming Soon</h3>
@@ -198,7 +160,7 @@
     © 2025 Frank M Strocchio · Built on 2 packs of ramen and a dream
   </footer>
 
-  <!-- Scroll Reveal -->
+  <script src="https://unpkg.com/scrollreveal"></script>
   <script>
     ScrollReveal().reveal('section, .tilt', {
       delay: 100,
@@ -214,7 +176,6 @@
       setTimeout(() => loader.remove(), 700);
     });
   </script>
-
 </body>
 
 </html>
